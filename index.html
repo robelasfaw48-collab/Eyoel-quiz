@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Eyoel Math Website</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Times New Roman", serif;
+      text-align: center;
+      min-height: 100vh;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #222;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h1 { color: white; }
+
+    .box {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      max-width: 520px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 6px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #3498db;
+      color: white;
+    }
+
+    button:hover { background: #1f6fb2; }
+
+    #score { font-weight: bold; color: green; }
+
+    .certificate {
+      display: none;
+      min-height: 100vh;
+      background: linear-gradient(to bottom right, #00c6ff, #0072ff);
+      color: white;
+      padding-top: 60px;
+    }
+
+    .cert-box {
+      background: white;
+      color: #333;
+      border-radius: 20px;
+      width: 80%;
+      max-width: 600px;
+      margin: auto;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      border: 6px solid gold;
+    }
+
+    .fail {
+      background: linear-gradient(to bottom right, #ff4b2b, #ff416c);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container" id="mainApp">
+  <h1>Welcome to Eyoel's Math Website</h1>
+  <p style="color:white;">Grade 7 Ethiopian Curriculum</p>
+
+  <div class="box">
+    <h2>Study Timer</h2>
+    <p id="time">30:00</p>
+    <button onclick="startTimer()">Start 30 Minutes</button>
+  </div>
+
+  <div class="box">
+    <h2>Math Quiz</h2>
+    <p id="question"></p>
+    <div id="answers"></div>
+    <p id="quizResult"></p>
+    <p>Score: <span id="score">0</span>/30</p>
+    <button onclick="nextQuestion()">Next</button>
+  </div>
+</div>
+
+<!-- CERTIFICATE -->
+<div class="certificate" id="certPass">
+  <div class="cert-box">
+    <h1>Certificate of Achievement</h1>
+    <h2>Congratulations!</h2>
+    <p>This certificate is proudly presented to</p>
+    <h2><u>Student</u></h2>
+    <p>For successfully passing the Grade 7 Math Challenge</p>
+    <p>Created by: Eyoel</p>
+    <p>Final Score: <span id="finalScore1"></span>/30</p>
+  </div>
+</div>
+
+<div class="certificate fail" id="certFail">
+  <div class="cert-box">
+    <h1>Try Again</h1>
+    <p>You did not reach the passing score.</p>
+    <p>Keep practicing and come back stronger.</p>
+    <p>Your Score: <span id="finalScore2"></span>/30</p>
+  </div>
+</div>
+
+<script>
+let time = 1800;
+let timer;
+
+function startTimer() {
+  const display = document.getElementById("time");
+  if (timer) return;
+  timer = setInterval(() => {
+    let m = Math.floor(time / 60);
+    let s = time % 60;
+    display.textContent =
+      (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    time--;
+    if (time < 0) {
+      clearInterval(timer);
+      finishQuiz();
+    }
+  }, 1000);
+}
+
+const questions = [
+  { q: "-7 + 12 =", a: 5, options: [5,-5,19] },
+  { q: "-4 - 9 =", a: -13, options: [-13,13,5] },
+  { q: "-3 × 6 =", a: -18, options: [-18,18,-9] },
+  { q: "-20 ÷ 5 =", a: -4, options: [-4,4,-5] },
+  { q: "Solve: x + 9 = 20", a: 11, options: [11,10,9] },
+  { q: "Solve: 3x = 21", a: 7, options: [7,6,8] },
+  { q: "Solve: 4x - 8 = 12", a: 5, options: [5,4,6] },
+  { q: "Simplify ratio 12:18", a: "2:3", options: ["2:3","3:2","6:9"] },
+  { q: "Find x: 6/18 = x/6", a: 2, options: [2,3,4] },
+  { q: "Convert 1/4 to percent", a: "25%", options: ["25%","50%","75%"] },
+  { q: "What is 20% of 150?", a: 30, options: [30,20,25] },
+  { q: "If 30% of a number is 60, find number", a: 200, options: [200,180,240] },
+  { q: "Which is greater: -3 or -7?", a: "-3", options: ["-3","-7","0"] },
+  { q: "7 + (-15) =", a: -8, options: [-8,8,-22] },
+  { q: "-6 × -4 =", a: 24, options: [24,-24,12] },
+  { q: "18 ÷ -3 =", a: -6, options: [-6,6,-9] },
+  { q: "Ratio boys:girls = 3:5, girls=25, boys=?", a: 15, options: [15,20,10] },
+  { q: "Find 10% of 90", a: 9, options: [9,10,8] },
+  { q: "Solve: x - 7 = 10", a: 17, options: [17,15,20] },
+  { q: "Solve: 5x = 45", a: 9, options: [9,8,10] },
+  { q: "Convert 3/5 to percent", a: "60%", options: ["60%","50%","75%"] },
+  { q: "What is 25% of 200?", a: 50, options: [50,40,60] }
+];
+
+let current = 0;
+let score = 0;
+let locked = false;
+
+function displayQuestion() {
+  locked = false;
+  document.getElementById("question").textContent = questions[current].q;
+  const box = document.getElementById("answers");
+  box.innerHTML = "";
+  questions[current].options.forEach(opt => {
+    const b = document.createElement("button");
+    b.textContent = opt;
+    b.onclick = () => checkAnswer(opt);
+    box.appendChild(b);
+  });
+}
+
+function checkAnswer(ans) {
+  if (locked) return;
+  locked = true;
+
+  if (ans == questions[current].a) score++;
+  document.getElementById("score").textContent = score;
+
+  setTimeout(() => {
+    if (current < questions.length - 1) {
+      current++;
+      displayQuestion();
+    } else {
+      finishQuiz();
+    }
+  }, 400);
+}
+
+function finishQuiz() {
+  document.getElementById("mainApp").style.display = "none";
+  if (score >= 15) {
+    document.getElementById("certPass").style.display = "block";
+    document.getElementById("finalScore1").textContent = score;
+  } else {
+    document.getElementById("certFail").style.display = "block";
+    document.getElementById("finalScore2").textContent = score;
+  }
+}
+
+displayQuestion();
+</script>
